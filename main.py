@@ -1,4 +1,4 @@
-from config import url, output_path_youtube, output_path_transcription
+from config import output_path_youtube, output_path_transcription
 from logger import logger
 from query_service.query_engine import create_query_engine, query_summary
 from resource_loader.json_loader import load_json_file_and_extract_text
@@ -31,7 +31,7 @@ def download_video(yt_loader, output_path_youtube):
     logger.info(f"Video downloaded to {output_path_youtube}")
 
 
-def transcribe_video(yt_loader, output_path_youtube, output_path_transcription):
+def transcribe_video(yt_loader, device, output_path_youtube, output_path_transcription):
     logger.info("Initializing Transcription Service...")
     yt_transcriber = YouTubeTranscriber(yt_loader.video_id, yt_loader.filename, output_path_youtube,
                                         output_path_transcription)
@@ -59,7 +59,7 @@ def create_and_query_engine(document):
     return response
 
 
-if __name__ == "__main__":
+def main(url):
     yt_loader = YouTubeLoader(url, output_path_youtube)
 
     video_file_path = os.path.join(output_path_youtube, f"{yt_loader.video_id}.mp3")
@@ -78,5 +78,8 @@ if __name__ == "__main__":
     docs = load_transcription(yt_loader, output_path_transcription)
 
     result = create_and_query_engine(docs)
-
     print(result)
+
+
+if __name__ == "__main__":
+    main("https://www.youtube.com/watch?v=vw-KWfKwvTQ")

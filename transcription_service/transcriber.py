@@ -1,19 +1,24 @@
 import json
+
+import torch
 import whisper
+
 from logger import logger
 
 
 class YouTubeTranscriber:
-    def __init__(self, video_id, filename, output_path_youtube, output_path_transcription):
+    def __init__(self, video_id, filename, output_path_youtube, output_path_transcription, device=None):
         self.video_id = video_id
         self.filename = filename
         self.output_path_transcription = output_path_transcription
         self.transcription = None
         self.output_path_youtube = output_path_youtube
+        if not device:
+            self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    def transcribe_audio(self, model_name, device):
+    def transcribe_audio(self, model_name):
         audio = whisper.load_audio(f"{self.output_path_youtube}/{self.filename}")
-        model = whisper.load_model(model_name, device=device)
+        model = whisper.load_model(model_name, device=self.device)
         self.transcription = whisper.transcribe(model, audio, word_timestamps=True)
 
     def write_to_json(self):
@@ -39,9 +44,9 @@ class YouTubeTranscriber:
 
         self.transcription["merged_segments"] = merged_segments
 
-    def run(self, number_to_merge=4, model_name="base", device="cpu"):
+    def run(self, number_to_merge=4, model_name="base"):
         logger.info("transcribe_audio")
-        self.transcribe_audio(model_name=model_name, device=device)
+        self.transcribe_audio(model_name=model_name)
 
         logger.info("merge_segments")
         self.merge_segments(number_to_merge)
