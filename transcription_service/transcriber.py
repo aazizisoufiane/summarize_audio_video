@@ -1,7 +1,9 @@
 import json
 
 import torch
+import whisper_timestamped as whisper
 import whisper
+
 
 from logger import logger
 
@@ -19,7 +21,7 @@ class YouTubeTranscriber:
     def transcribe_audio(self, model_name):
         audio = whisper.load_audio(f"{self.output_path_youtube}/{self.filename}")
         model = whisper.load_model(model_name, device=self.device)
-        self.transcription = whisper.transcribe(model, audio, word_timestamps=True)
+        self.transcription = whisper.transcribe(model, audio)
 
     def write_to_json(self):
         with open(f"{self.output_path_transcription}/{self.video_id}.json", "w") as f:
