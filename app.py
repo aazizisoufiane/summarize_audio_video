@@ -1,12 +1,14 @@
 # Import Streamlit
 import os
 
+import openai
 import streamlit as st
 from streamlit_chat import message
 
-from config import output_path_youtube, output_path_transcription
+from config import output_path_video, output_path_transcription
 from keyword_retriever.keyword_retreiver import VideoRetriever
 from logger import logger
+from resource_loader.uploaded_video_loader import UploadedVideoLoader
 from resource_loader.youtube_loader import YouTubeLoader
 from summarization_service.summarizer import TranscriptSummary
 from utils import check_file_exists, download_video, transcribe_video, load_transcription
@@ -20,13 +22,25 @@ chat_history = []
 logger.info(f"Build retriever")
 
 
-@st.cache_resource()
-def factory(video_id):
-    retriever = VideoRetriever(video_id=video_id)
-    ts = TranscriptSummary(doc_id=video_id)
+def generate_response(prompt_input):
+    answer = transcript_summary.query_summary(prompt_input)
 
+    return answer
+
+
+@st.cache_resource()
+def factory_transcript(video_id, model):
+    ts = TranscriptSummary(doc_id=video_id, model=model)
+    logger.info("TranscriptSummary initialized")
+    return ts
+
+
+@st.cache_resource()
+def factory_video(video_id, top_k):
+    retriever = VideoRetriever(video_id=video_id, similarity_top_k=top_k)
     logger.info("video_retriever initialized")
-    return retriever, ts
+    return retriever
+
 
 with st.sidebar:
     # Sidebar
@@ -34,27 +48,46 @@ with st.sidebar:
     # Create a sidebar for the YouTube URL, search bar, and settings
     # st.title("Settings")
     youtube_url = st.text_input("Enter YouTube URL:", value="https://www.youtube.com/watch?v=reUZRyXxUs4")
+    uploaded_video = st.file_uploader("Or upload a video...", type=['mp4', 'mov', 'avi', 'flv', 'mkv'])
+    if uploaded_video:
+        original_name = uploaded_video.name  # Get the original name of the uploaded file
+        video_loader = UploadedVideoLoader(uploaded_video, original_name)
+        # video_loader.download()
 
-    chosen_LLM = st.selectbox("Choose Language Model", ["LLM-1", "LLM-2", "LLM-3"])
+
+    else:
+        # youtube_url = st.text_input("Enter YouTube URL:", value="https://www.youtube.com/watch?v=reUZRyXxUs4")
+        video_loader = YouTubeLoader(youtube_url, output_path_video)
+
+    similarity_top_k = st.number_input("Maximum Number of Results to Display", min_value=1, max_value=100, value=10)
+
+    chosen_LLM = st.selectbox("Choose Language Model", ["gpt-3.5-turbo", "default"])
     api_key = st.text_input("OpenAI API Key", type="password")
 
-yt_loader = YouTubeLoader(youtube_url, output_path_youtube)
-video_retriever, transcript_summary = factory(yt_loader.video_id)
+if api_key:
+    openai.api_key = api_key
 
-video_file_path = os.path.join(output_path_youtube, f"{yt_loader.video_id}.mp3")
-transcription_file_path = os.path.join(output_path_transcription, f"{yt_loader.video_id}.json")
+
+video_file_path = os.path.join(output_path_video, f"{video_loader.video_id}.mp3")
+transcription_file_path = os.path.join(output_path_transcription, f"{video_loader.video_id}.json")
 
 if not check_file_exists(video_file_path):
-    download_video(yt_loader, output_path_youtube)
+    download_video(video_loader, output_path_video)
 else:
     logger.info(f"Video already downloaded: {video_file_path}")
 
+
 if not check_file_exists(transcription_file_path):
-    transcribe_video(yt_loader, output_path_youtube, output_path_transcription)
+    transcribe_video(video_loader, output_path_video, output_path_transcription)
 else:
     logger.info(f"Transcription already exists: {transcription_file_path}")
 
-docs = load_transcription(yt_loader, output_path_transcription)
+video_retriever = factory_video(video_loader.video_id, top_k=int(similarity_top_k))
+transcript_summary = factory_transcript(video_loader.video_id, model=chosen_LLM)
+
+
+
+docs = load_transcription(video_loader, output_path_transcription)
 
 if 'current_video' not in st.session_state:
     st.session_state.current_video = youtube_url
@@ -65,7 +98,10 @@ col2, col3 = st.columns([3, 1])
 video_slot = col2.empty()
 
 with col2:
-    video_slot.video(youtube_url)
+    if uploaded_video:
+        video_slot.video(uploaded_video)
+    else:
+        video_slot.video(youtube_url)
 
     st.title("Summary")
     # Display summary here
@@ -75,7 +111,7 @@ with col2:
         st.session_state.chat_history = []
 
     # Main Content - Bottom Section for Chat
-    st.title("Chat UI")
+    st.title("Ask me")
 
 with col3:
     user_input = st.text_input("Search:")
@@ -94,7 +130,10 @@ with col3:
 
             if st.button(text_content, key=f"button_{i}"):
                 st.session_state.current_video = full_youtube_url
-                video_slot.video(full_youtube_url, start_time=start_time)
+                if uploaded_video:
+                    video_slot.video(uploaded_video, start_time=start_time)
+                else:
+                    video_slot.video(full_youtube_url, start_time=start_time)
 
 with col2:
     chat_placeholder = st.empty()
@@ -109,12 +148,6 @@ with col2:
         user_input = st.session_state.user_input
         st.session_state.past.append(user_input)
         st.session_state.generated.append("The messages from Bot\nWith new line")
-
-
-    def generate_response(prompt_input):
-        answer = transcript_summary.query_summary(prompt_input)
-
-        return answer
 
 
     if 'generated' not in st.session_state:

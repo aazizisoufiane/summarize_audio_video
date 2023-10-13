@@ -13,8 +13,10 @@ from logger import logger
 
 
 class VideoRetriever:
-    def __init__(self, video_id):
+    def __init__(self, video_id, similarity_top_k=5):
         self.video_id = video_id
+        self.similarity_top_k = similarity_top_k
+
         self._initialize_retriever()
 
     def _initialize_retriever(self):
@@ -46,7 +48,7 @@ class VideoRetriever:
                                                      service_context=service_context, show_progress=True)
         logger.info("End indexing transcription")
 
-        self.retreiver = self.index.as_retriever(similarity_top_k=5)
+        self.retreiver = self.index.as_retriever(similarity_top_k=self.similarity_top_k)
 
     def _load_documents(self):
         with open(os.path.join(config.output_path_transcription, f"{self.video_id}.json"), "r") as f:
