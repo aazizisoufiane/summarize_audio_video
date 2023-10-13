@@ -1,8 +1,8 @@
 # Import Streamlit
 import os
-import time
 
 import streamlit as st
+from streamlit_chat import message
 
 from config import output_path_youtube, output_path_transcription
 from keyword_retriever.keyword_retreiver import VideoRetriever
@@ -10,26 +10,12 @@ from logger import logger
 from resource_loader.youtube_loader import YouTubeLoader
 from summarization_service.summarizer import TranscriptSummary
 from utils import check_file_exists, download_video, transcribe_video, load_transcription
-st.set_page_config(
-        page_title="Summary",
-        layout="wide"
-)
+
+st.set_page_config(page_title="Summary", layout="wide")
 # from  main import factory
 
 # Initialize chat history
 chat_history = []
-
-# Placeholder for the video; initially empty
-# video_slot = st.empty()
-
-
-# Layout Configuration
-# st.set_page_config(page_title="Your Awesome App", layout="wide")
-
-
-def my_hash_func(tokenizer):
-    return tokenizer.to_str()
-
 
 logger.info(f"Build retriever")
 
@@ -51,7 +37,6 @@ with st.sidebar:
 
     chosen_LLM = st.selectbox("Choose Language Model", ["LLM-1", "LLM-2", "LLM-3"])
     api_key = st.text_input("OpenAI API Key", type="password")
-# from streamlit_player import st_player
 
 yt_loader = YouTubeLoader(youtube_url, output_path_youtube)
 video_retriever, transcript_summary = factory(yt_loader.video_id)
@@ -85,30 +70,12 @@ with col2:
     st.title("Summary")
     # Display summary here
     st.write(transcript_summary.get_document_summary())
+    # Initialize session_state for chat history if it doesn't exist
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []
 
     # Main Content - Bottom Section for Chat
     st.title("Chat UI")
-
-    # Display chat history
-    if chat_history:
-        st.text_area("Chat History", "\n".join(chat_history), height=200)
-
-    # Get user input
-    user_input_chat = st.text_input("Type your message here...")
-
-    # Check if the user has entered a new message
-    if user_input_chat:
-        chat_history.append(f'You: {user_input_chat}')
-        st.text_area("Chat History", "\n".join(chat_history), height=200)
-
-        # Clear the user input field
-        answer = transcript_summary.query_summary(user_input_chat)
-        st.text_input(answer, value="", key=1)
-
-        # Simulate bot reply
-        time.sleep(2)
-        chat_history.append('Bot: Thank you for your message.')
-        st.text_area("Chat History", "\n".join(chat_history), height=200)
 
 with col3:
     user_input = st.text_input("Search:")
@@ -129,3 +96,38 @@ with col3:
                 st.session_state.current_video = full_youtube_url
                 video_slot.video(full_youtube_url, start_time=start_time)
 
+with col2:
+    chat_placeholder = st.empty()
+
+
+    def on_btn_click():
+        del st.session_state.past[:]
+        del st.session_state.generated[:]
+
+
+    def on_input_change():
+        user_input = st.session_state.user_input
+        st.session_state.past.append(user_input)
+        st.session_state.generated.append("The messages from Bot\nWith new line")
+
+
+    def generate_response(prompt_input):
+        answer = transcript_summary.query_summary(prompt_input)
+
+        return answer
+
+
+    if 'generated' not in st.session_state:
+        st.session_state['generated'] = []
+    if 'past' not in st.session_state:
+        st.session_state['past'] = []
+
+    with chat_placeholder.container():
+        for i in range(len(st.session_state['generated'])):
+            message(st.session_state['past'][i], is_user=True, key=f"{i}_user")
+            message(generate_response(st.session_state['past'][i]), key=f"{i}", allow_html=True, is_table=False)
+
+        st.button("Clear message", on_click=on_btn_click)
+
+    with st.container():
+        st.text_input("User Input:", on_change=on_input_change, key="user_input")
