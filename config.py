@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv, find_dotenv
 
-# _ = load_dotenv(find_dotenv())
+_ = load_dotenv(find_dotenv())
 
 
 script_dir = os.path.dirname(os.path.realpath(__file__))

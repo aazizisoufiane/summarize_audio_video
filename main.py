@@ -13,7 +13,7 @@ def youtube_loader(url, output_path_youtube, output_path_transcription):
     yt_loader.download_youtube()
 
     # Transcription Service
-    yt_transcriber = YouTubeTranscriber(yt_loader.video_id, yt_loader.filename, output_path_youtube,
+    yt_transcriber = YouTubeTranscriber(yt_loader.video_id, yt_loader.filename, output_path_video,
                                         output_path_transcription)
     yt_transcriber.run()
 
