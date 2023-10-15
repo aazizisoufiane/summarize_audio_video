@@ -24,7 +24,6 @@ The project is built using Python and integrates various libraries including Whi
 ├── keyword_retriever            # Module for keyword retrieval
 │   └── keyword_retreiver.py     # Keyword retriever script
 ├── logger.py                    # Logging utility
-├── main.py                      # Main script
 ├── notebooks                    # Jupyter notebooks for development and testing
 ├── pdf_test.py                  # PDF testing script
 ├── query_service                # Query service module
