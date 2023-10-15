@@ -5,9 +5,14 @@ _ = load_dotenv(find_dotenv())
 
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
-# output_path_youtube = os.path.join(script_dir, "youtube_videos")
-output_path_video = os.path.join(script_dir, "videos")
 
+# Define the output paths
+output_path_video = os.path.join(script_dir, "videos")
 output_path_transcription = os.path.join(script_dir, "transcriptions")
 
-url = "https://www.youtube.com/watch?v=5p248yoa3oE"
+# Check if the directories exist, create them if they don't
+if not os.path.exists(output_path_video):
+    os.makedirs(output_path_video)
+
+if not os.path.exists(output_path_transcription):
+    os.makedirs(output_path_transcription)

@@ -115,13 +115,11 @@ if youtube_url or uploaded_video:
     with col3:
         user_input = st.text_input("Search:")
         if user_input:
-            if st.session_state.current_video:
-                video_slot.video(st.session_state.current_video)
-            else:
-                if isinstance(video_loader, UploadedVideoLoader):
-                    video_slot.video(uploaded_video)
-                elif isinstance(video_loader, YouTubeLoader):
-                    video_slot.video(youtube_url)
+
+            if isinstance(video_loader, UploadedVideoLoader):
+                video_slot.video(uploaded_video)
+            elif isinstance(video_loader, YouTubeLoader):
+                video_slot.video(youtube_url)
 
             raw_results = video_retriever.search(user_input)
             for i, result in enumerate(raw_results):
