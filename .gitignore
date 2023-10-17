@@ -1,3 +1,6 @@
+transcriptions/
+videos/
+youtube_videos/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
