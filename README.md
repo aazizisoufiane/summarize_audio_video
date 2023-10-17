@@ -11,6 +11,7 @@ pinned: false
 ---
 
 # Summarize Audio and Video with Semantic Retrieval, Chatbot, and LLM
+![Alt Text](media/demo.gif)
 
 ## Description
 
