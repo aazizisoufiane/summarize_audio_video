@@ -3,32 +3,34 @@ import os
 
 from llama_index import (ServiceContext, get_response_synthesizer, Document)
 from llama_index.indices.document_summary import DocumentSummaryIndex
-from llama_index.llms import OpenAI
+from llama_index.llms import OpenAI, Replicate
 
 from config import output_path_transcription
 from logger import logger
 
 
 class TranscriptSummary:
-    def __init__(self, doc_id, model):
+    def __init__(self, doc_id, model="default", llm_provider=None):
         self.doc_id = doc_id
         self.document = self.load_json_file_and_extract_text()
         self.model = model
+        self.llm_provider = llm_provider
 
         # Check for the presence of the openai_key
-        if "gpt" in self.model and "OPENAI_KEY" in os.environ:
-            try:
-                self.llm = OpenAI(temperature=0, model=self.model)
-            except:
-                self.llm = "default"
-
+        if self.llm_provider == "OpenAI":
+            self.llm = OpenAI(model=self.model, temperature=0.9)
+        elif self.llm_provider == "Replicate":
+            self.llm = Replicate(model=self.model)
         else:
             self.llm = "default"
+
         # logger.info(f"LLM ")
-        logger.info(f"LLM used: {self.llm}"*50)
+        logger.info(f"Model used: {self.model}")
+        logger.info(f"LLM Provider: {self.llm_provider}")
 
         self.service_context = ServiceContext.from_defaults(llm=self.llm, chunk_size=1024)
-        self.response_synthesizer = get_response_synthesizer(response_mode="tree_summarize", use_async=True)
+        self.response_synthesizer = get_response_synthesizer(response_mode="tree_summarize",
+                                                             use_async=True)
         self.doc_summary_index = DocumentSummaryIndex.from_documents(self.document,
                                                                      service_context=self.service_context,
                                                                      response_synthesizer=self.response_synthesizer,

@@ -11,7 +11,7 @@ from transcription_service.transcriber import YouTubeTranscriber
 #     yt_loader.download_youtube()
 #
 #     # Transcription Service
-#     yt_transcriber = YouTubeTranscriber(yt_loader.video_id, yt_loader.filename, output_path_youtube,
+#     yt_transcriber = YouTubeTranscriber(yt_loader.media_id, yt_loader.filename, output_path_youtube,
 #                                         output_path_transcription)
 #     yt_transcriber.run()
 #
@@ -23,26 +23,25 @@ def check_file_exists(file_path):
     return os.path.exists(file_path)
 
 
-def download_video(video_loader, output_path_video):
+def download_video(video_loader):
     logger.info("Initializing Resource Loader...")
     logger.info(f"Downloading video")
     video_loader.download()
-    logger.info(f"Video downloaded to {output_path_video}")
 
 
 def transcribe_video(video_loader, output_path, output_path_transcription):
     logger.info("Initializing Transcription Service...")
-    yt_transcriber = YouTubeTranscriber(video_loader.video_id, video_loader.filename, output_path,
+    yt_transcriber = YouTubeTranscriber(video_loader.media_id, video_loader.filename, output_path,
                                         output_path_transcription)
-    logger.info(f"Transcribing video: {video_loader.video_id}")
+    logger.info(f"Transcribing video: {video_loader.media_id}")
     yt_transcriber.run()
     logger.info(f"Transcription completed and saved to {output_path_transcription}")
 
 
 def load_transcription(yt_loader, output_path_transcription):
     logger.info("Loading JSON transcript...")
-    document = load_json_file_and_extract_text(f"{output_path_transcription}/{yt_loader.video_id}.json")
-    logger.info(f"JSON transcript loaded from {output_path_transcription}/{yt_loader.video_id}.json")
+    document = load_json_file_and_extract_text(f"{output_path_transcription}/{yt_loader.media_id}.json")
+    logger.info(f"JSON transcript loaded from {output_path_transcription}/{yt_loader.media_id}.json")
     return document
 
 

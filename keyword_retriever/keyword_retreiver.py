@@ -12,9 +12,9 @@ from llama_index.vector_stores import ChromaVectorStore
 from logger import logger
 
 
-class VideoRetriever:
-    def __init__(self, video_id, similarity_top_k=5):
-        self.video_id = video_id
+class MediaRetriever:
+    def __init__(self, media_id, similarity_top_k=5):
+        self.media_id = media_id
         self.similarity_top_k = similarity_top_k
 
         self._initialize_retriever()
@@ -51,7 +51,7 @@ class VideoRetriever:
         self.retreiver = self.index.as_retriever(similarity_top_k=self.similarity_top_k)
 
     def _load_documents(self):
-        with open(os.path.join(config.output_path_transcription, f"{self.video_id}.json"), "r") as f:
+        with open(os.path.join(config.output_path_transcription, f"{self.media_id}.json"), "r") as f:
             json_data = json.load(f)
 
         documents = []
@@ -68,5 +68,5 @@ class VideoRetriever:
 
 
 if __name__ == '__main__':
-    retriever = VideoRetriever(video_id="youtube_5p248yoa3oE")
+    retriever = MediaRetriever(media_id="youtube_5p248yoa3oE")
     print(retriever.search("deep"))

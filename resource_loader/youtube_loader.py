@@ -9,7 +9,7 @@ from resource_loader.video_loader_interface import VideoLoaderInterface
 class YouTubeLoader(VideoLoaderInterface):
     def __init__(self, url, output_path_youtube):
         self.filename = None
-        self.video_id = None
+        self.media_id = None
         self.url = url
         self.output_path_youtube = output_path_youtube
         self.yt = YouTube(url)
@@ -20,9 +20,9 @@ class YouTubeLoader(VideoLoaderInterface):
         domain_parts = parsed_url.netloc.split(".")
         main_domain = domain_parts[-2] if len(domain_parts) >= 2 else None
         query_params = parse_qs(parsed_url.query)
-        video_id = query_params.get("v", [None])[0]
-        self.video_id = f"{main_domain}_{video_id}"
-        self.filename = f"{self.video_id}.mp3"
+        media_id = query_params.get("v", [None])[0]
+        self.media_id = f"{main_domain}_{media_id}"
+        self.filename = f"{self.media_id}.mp3"
 
     def download(self):
         audio_stream = self.yt.streams.filter(only_audio=True).first()

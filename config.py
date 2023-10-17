@@ -8,6 +8,7 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 
 # Define the output paths
 output_path_video = os.path.join(script_dir, "videos")
+output_path_audio = os.path.join(script_dir, "audio")
 output_path_transcription = os.path.join(script_dir, "transcriptions")
 
 # Check if the directories exist, create them if they don't

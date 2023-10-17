@@ -1,3 +1,17 @@
+---
+title: "Audio and Video Content Analyzer"
+emoji: "🎥"
+colorFrom: "blue"
+colorTo: "green"
+sdk: "streamlit"
+python_version: "3.8"
+sdk_version: 1.27.2
+app_file: "app.py"
+pinned: false
+---
+
+
+
 # Summarize Audio and Video with Semantic Retrieval, Chatbot, and LLM
 
 ## Description
