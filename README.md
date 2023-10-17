@@ -10,19 +10,21 @@ app_file: "app.py"
 pinned: false
 ---
 
-
-
 # Summarize Audio and Video with Semantic Retrieval, Chatbot, and LLM
 
 ## Description
 
 This project is an all-in-one solution for audio and video content analysis:
 
-1. **Summarization**: Generates concise summaries using advanced Natural Language Processing, powered by HuggingFace Transformers.
-2. **Semantic Retrieval**: Enables you to find specific words, phrases, or segments, thanks to Whisper Timestamped by Linto.
-3. **Chatbot Interface**: Features a chatbot that can answer queries about the audio or video content, leveraging Language Models for Machines (LLM).
+1. **Summarization**: Generates concise summaries using advanced Natural Language Processing, powered by HuggingFace
+   Transformers.
+2. **Semantic Retrieval**: Enables you to find specific words, phrases, or segments, thanks to Whisper Timestamped by
+   Linto.
+3. **Chatbot Interface**: Features a chatbot that can answer queries about the audio or video content, leveraging
+   Language Models for Machines (LLM).
 
-The project is built using Python and integrates various libraries including Whisper Timestamped, HuggingFace Transformers, and Streamlit for a seamless user experience.
+The project is built using Python and integrates various libraries including Whisper Timestamped, HuggingFace
+Transformers, and Streamlit for a seamless user experience.
 
 ## Project Structure
 
@@ -64,13 +66,13 @@ The project is built using Python and integrates various libraries including Whi
 
 ## Built With
 
-- [Llama_index](https://www.llamaindex.ai/) Framework for  LLM application
+- [Llama_index](https://www.llamaindex.ai/) Framework for LLM application
 - [Whisper Timestamped](https://github.com/linto-ai/whisper-timestamped) - For semantic retrieval and timestamping
 - [HuggingFace Transformers](https://huggingface.co/transformers/) - For summarization and NLP
 - [Streamlit](https://streamlit.io/) - For the web interface
 
-
 ## Setup and Installation
+
 ## Setup and Installation
 
 There are two methods to get the project up and running:
@@ -102,6 +104,7 @@ There are two methods to get the project up and running:
     streamlit run app.py
     ```
 5. Open your web browser and go to `http://localhost:8501`.
+
 ### Using Python Environment
 
 1. Clone the repository.
@@ -123,7 +126,8 @@ There are two methods to get the project up and running:
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull
+requests.
 
 ## License
 

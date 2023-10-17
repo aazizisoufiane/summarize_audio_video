@@ -29,8 +29,7 @@ class TranscriptSummary:
         logger.info(f"LLM Provider: {self.llm_provider}")
 
         self.service_context = ServiceContext.from_defaults(llm=self.llm, chunk_size=1024)
-        self.response_synthesizer = get_response_synthesizer(response_mode="tree_summarize",
-                                                             use_async=True)
+        self.response_synthesizer = get_response_synthesizer(response_mode="tree_summarize", use_async=True)
         self.doc_summary_index = DocumentSummaryIndex.from_documents(self.document,
                                                                      service_context=self.service_context,
                                                                      response_synthesizer=self.response_synthesizer,

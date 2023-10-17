@@ -2,13 +2,13 @@ import json
 import os
 import time
 
-import config
 import chromadb
 from llama_index import (ServiceContext, StorageContext, VectorStoreIndex, )
 from llama_index.embeddings import HuggingFaceEmbedding
 from llama_index.schema import Document
 from llama_index.vector_stores import ChromaVectorStore
 
+import config
 from logger import logger
 
 
@@ -37,8 +37,7 @@ class MediaRetriever:
         if chroma_collection is not None:
             vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
         else:
-            logger.error("chroma_collection is not initialized.")
-            # handle this case
+            logger.error("chroma_collection is not initialized.")  # handle this case
 
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
         service_context = ServiceContext.from_defaults(embed_model=embed_model)
@@ -65,8 +64,3 @@ class MediaRetriever:
     def search(self, query):
         response = self.retreiver.retrieve(query)
         return response
-
-
-if __name__ == '__main__':
-    retriever = MediaRetriever(media_id="youtube_5p248yoa3oE")
-    print(retriever.search("deep"))

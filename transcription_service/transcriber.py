@@ -1,9 +1,7 @@
 import json
 
 import torch
-import whisper_timestamped as whisper
 import whisper
-
 
 from logger import logger
 
